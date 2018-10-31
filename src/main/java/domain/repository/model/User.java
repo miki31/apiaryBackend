@@ -1,39 +1,40 @@
-package entity;
+package domain.repository.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Entity
-@Table(name = "t_credentials")
+@Table(name = "user")
+@EntityListeners(AuditingEntityListener.class)
+@JsonIgnoreProperties(value = {"createDate", "removeDate"},
+        allowGetters = true)
 public class User {
 
     @Id
-    @Column(name = "crd_id")
-    @GeneratedValue(generator = "increment")
-    private long id;
+    @Column(name = "usr_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
+    private Long id;
 
-    @Column(name = "crd_login")
+    @Column(name = "usr_login")
+    @NotBlank
     private String login;
 
-    @Column(name = "crd_pass")
+    @Column(name = "usr_password")
+    @NotBlank
     private String pass;
 
-    @Column(name = "crd_first_name")
-    private String firstName;
-
-    @Column(name = "crd_last_name")
-    private String lastName;
-
-    @Column(name = "crd_role")
+    @Column(name = "usr_role")
     private String role;
 
-    @Column(name = "crd_audit_cd")
+    @Column(name = "usr_create_date")
     private Date createDate;
 
-    @Column(name = "crd_audit_md")
-    private Date modifyDate;
-
-    @Column(name = "crd_audit_rd")
+    @Column(name = "usr_remove_date")
     private Date removeDate;
 
     public User() {
@@ -63,22 +64,6 @@ public class User {
         this.pass = pass;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getRole() {
         return role;
     }
@@ -93,14 +78,6 @@ public class User {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
-    }
-
-    public Date getModifyDate() {
-        return modifyDate;
-    }
-
-    public void setModifyDate(Date modifyDate) {
-        this.modifyDate = modifyDate;
     }
 
     public Date getRemoveDate() {
