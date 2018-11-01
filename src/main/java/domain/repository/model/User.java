@@ -9,15 +9,15 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user" ,schema = "public")
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createDate", "removeDate"},
-        allowGetters = true)
+@JsonIgnoreProperties(value = {"createDate", "removeDate"})
 public class User {
 
     @Id
     @Column(name = "usr_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "usr_login")
