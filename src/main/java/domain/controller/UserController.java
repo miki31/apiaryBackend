@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,8 +37,29 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public User createUser(@Valid @RequestBody User user){
-        return userRepository.save(user);
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
+        User alreadyUser = userRepository.findByLoginAndPassAndRemoveDateIsNull(user.getLogin(),user.getPass());
+        if (alreadyUser!=null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }else {
+            return new ResponseEntity<>(userRepository.save(user),HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Responce> deleteUser(@Valid @RequestParam("id") Long id){
+        try {
+            User alreadyUser = userRepository.findByIdAndRemoveDateIsNull(id);
+            if (alreadyUser == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }else {
+                alreadyUser.setRemoveDate(LocalDate.now());
+                userRepository.save(alreadyUser);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/current")
@@ -48,11 +72,11 @@ public class UserController {
     @GetMapping("/login")
     public ResponseEntity<Responce> login(@RequestParam("login") String login,
                                           @RequestParam("pass") String pass){
-        List<User> list = customRepository.login(login,pass);
-        if (list.size() == 0){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else {
+        User user = userRepository.findByLoginAndPassAndRemoveDateIsNull(login,pass);
+        if (user!=null){
             return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

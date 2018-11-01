@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface UserCustomRepository {
 
-    public List<User> login(String login, String pass);
 }

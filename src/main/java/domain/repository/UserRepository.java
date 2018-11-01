@@ -7,4 +7,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
 
+    User findByLoginAndPassAndRemoveDateIsNull(String login, String pass);
+
+    User findByIdAndRemoveDateIsNull(Long Id);
+
+
 }
